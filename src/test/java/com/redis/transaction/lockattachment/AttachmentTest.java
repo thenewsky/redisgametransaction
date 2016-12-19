@@ -1,12 +1,11 @@
 package com.redis.transaction.lockattachment;
 
-import com.redis.transaction.GameTransactionCauseImpl;
-import com.redis.transaction.GameTransactionEntityCauseImpl;
-import com.redis.transaction.GameTransactionEntityFactoryImpl;
+import com.redis.transaction.TName;
+import com.redis.transaction.TEntityName;
+import com.redis.transaction.TEntityFactoryImpl;
 import com.redis.transaction.RedisKey;
-import com.redis.transaction.entity.CommonReadTransactionEnity;
 import com.redis.transaction.entity.TestMutexEntity;
-import com.redis.transaction.enums.GameTransactionCommitResult;
+import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.service.ConfigService;
 import com.redis.transaction.service.RedisService;
 import com.redis.transaction.service.TransactionService;
@@ -18,22 +17,21 @@ import com.redis.transaction.service.TransactionServiceImpl;
 public class AttachmentTest {
 
     public static void main(String[] args) throws Exception {
-        ConfigService configService = new ConfigService();
         RedisService redisService = new RedisService();
-        redisService.setJedisPool(configService.initRedis(configService.initRediPoolConfig()));
+        redisService.setJedisPool(ConfigService.getJedisPool());
 
         TransactionService transactionService = new TransactionServiceImpl();
 
         String union = "union";
         String attchMent = "attchement";
-        TestMutexEntity testMutexEntity = GameTransactionEntityFactoryImpl.createTestMutexEntity(GameTransactionEntityCauseImpl.attchment, redisService, RedisKey.player, union);
-        testMutexEntity.getGameTransactionLockInterface().setContent(attchMent);
-        GameTransactionCommitResult commitResult = transactionService.commitTransaction(GameTransactionCauseImpl.attchment, testMutexEntity);
+        TestMutexEntity testMutexEntity = TEntityFactoryImpl.createTestMutexEntity(TEntityName.attchment, redisService, RedisKey.player, union);
+        testMutexEntity.getLock().setContent(attchMent);
+        CommitResult commitResult = transactionService.commitTransaction(TName.attchment, testMutexEntity);
         System.out.println(commitResult.getReuslt());
 
-        CommonReadTransactionEnity commonReadTransactionEnity = GameTransactionEntityFactoryImpl.createNormalCommonReadTransactionEnity(GameTransactionEntityCauseImpl.attchment, redisService, RedisKey.player, union);
-        commonReadTransactionEnity.getGameTransactionLockInterface().setContent(attchMent);
-        commitResult = transactionService.commitTransaction(GameTransactionCauseImpl.read, commonReadTransactionEnity);
-        System.out.println(commitResult.getReuslt());
+//        TEnityImpl commonReadTransactionEnity = TEntityFactoryImpl.createReadTEnity(TEntityName.attchment, redisService, RedisKey.player, union);
+//        commonReadTransactionEnity.getLock().setContent(attchMent);
+//        commitResult = transactionService.commitTransaction(TName.read, commonReadTransactionEnity);
+//        System.out.println(commitResult.getReuslt());
     }
 }

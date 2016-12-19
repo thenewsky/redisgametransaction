@@ -1,9 +1,8 @@
 package com.redis.transaction.lock;
 
 import com.redis.log.Loggers;
-import com.redis.transaction.enums.GameTransactionEntityCause;
-import com.redis.transaction.enums.GameTransactionLockStateEnum;
-import com.redis.transaction.exception.GameTransactionException;
+import com.redis.transaction.enums.TLockState;
+import com.redis.transaction.exception.TException;
 import com.redis.transaction.service.RedisService;
 import com.redis.util.StringUtils;
 import org.slf4j.Logger;
@@ -12,33 +11,48 @@ import org.slf4j.Logger;
  * Created by jiangwenping on 16/11/26.
  * 读锁
  */
-public class GameTransactionReadLock implements GameTransactionLockInterface {
+public class TReadLockImpl implements TLock {
 
     protected static Logger logger = Loggers.lockLogger;
 
-    /** 对应的锁key*/
+    /**
+     * 对应的锁key
+     */
     private String lockKey;
 
-    /** redis*/
+    /**
+     * redis
+     */
     private RedisService redisService;
 
-    /**事务原因*/
-    private GameTransactionEntityCause gameTransactionEntityCause;
+    /**
+     * 事务原因
+     */
+    private String gameTransactionEntityCause;
 
-    /**锁定状态 */
-    private GameTransactionLockStateEnum lockState;
+    /**
+     * 锁定状态
+     */
+    private TLockState lockState;
 
     /**
      * 锁内容
      */
-    private String lockContent="";
+    private String lockContent = "";
 
-    public GameTransactionReadLock(String lockKey, RedisService redisService, GameTransactionEntityCause gameTransactionEntityCause) {
+    public TReadLockImpl(String lockKey, RedisService redisService, String gameTransactionEntityCause) {
         super();
         this.lockKey = lockKey;
         this.redisService = redisService;
         this.gameTransactionEntityCause = gameTransactionEntityCause;
-        this.lockState = GameTransactionLockStateEnum.init;
+        this.lockState = TLockState.init;
+    }
+
+    public TReadLockImpl(String lockKey, String gameTransactionEntityCause) {
+        super();
+        this.lockKey = lockKey;
+        this.gameTransactionEntityCause = gameTransactionEntityCause;
+        this.lockState = TLockState.init;
     }
 
     @Override
@@ -47,12 +61,12 @@ public class GameTransactionReadLock implements GameTransactionLockInterface {
     }
 
     @Override
-    public boolean create(long seconds) throws GameTransactionException {
-        this.lockState =  GameTransactionLockStateEnum.create;
+    public boolean create(long seconds) throws TException {
+        this.lockState = TLockState.create;
         String realLockKey = getLockKey(lockKey, gameTransactionEntityCause);
         logger.info("read  realLockKey:" + realLockKey);
-        boolean detectflag= redisService.exists(realLockKey);
-        if(detectflag && !StringUtils.isEmptyString(this.lockContent)){
+        boolean detectflag = redisService.exists(realLockKey);
+        if (detectflag && !StringUtils.isEmptyString(this.lockContent)) {
             detectflag = checkContent();
         }
         return detectflag;
@@ -60,18 +74,19 @@ public class GameTransactionReadLock implements GameTransactionLockInterface {
 
     @Override
     public String getInfo() {
-        return lockKey + StringUtils.DEFAULT_SPLIT + gameTransactionEntityCause.toString()+ StringUtils.DEFAULT_SPLIT + this.lockState;
+        return lockKey + StringUtils.DEFAULT_SPLIT + gameTransactionEntityCause.toString() + StringUtils.DEFAULT_SPLIT + this.lockState;
     }
 
 
     /**
      * 获取锁可以
+     *
      * @param lockKey
      * @param GameTransactionEntityCause
      * @return
      */
-    public String getLockKey(String lockKey, GameTransactionEntityCause GameTransactionEntityCause){
-        return lockKey + "#" + gameTransactionEntityCause.toString();
+    public String getLockKey(String lockKey, String GameTransactionEntityCause) {
+        return lockKey + "#" + gameTransactionEntityCause;
     }
 
     @Override
@@ -81,15 +96,16 @@ public class GameTransactionReadLock implements GameTransactionLockInterface {
 
     /**
      * 检查锁内容
+     *
      * @return
      */
-    public boolean checkContent(){
+    public boolean checkContent() {
         boolean checkFlag = false;
         String realLockKey = getLockKey(lockKey, gameTransactionEntityCause);
         String content = redisService.getString(realLockKey);
-        if(!StringUtils.isEmptyString(content)){
+        if (!StringUtils.isEmptyString(content)) {
             logger.info("read content realLockKey:" + realLockKey);
-            checkFlag = content.equals(this.lockContent );
+            checkFlag = content.equals(this.lockContent);
         }
 
         return checkFlag;

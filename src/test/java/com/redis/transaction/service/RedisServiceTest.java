@@ -7,9 +7,8 @@ import org.jdom.DataConversionException;
  */
 public class RedisServiceTest {
     public static void main(String[] args) throws DataConversionException {
-        ConfigService configService = new ConfigService();
         RedisService redisService = new RedisService();
-        redisService.setJedisPool(configService.initRedis(configService.initRediPoolConfig()));
+        redisService.setJedisPool(ConfigService.getJedisPool());
 
         String testKey = "ketest100";
         redisService.setString(testKey, "100");

@@ -1,8 +1,7 @@
 package com.redis.transaction.service;
 
-import com.redis.transaction.entity.AbstractGameTransactionEntity;
-import com.redis.transaction.enums.GameTransactionCause;
-import com.redis.transaction.enums.GameTransactionCommitResult;
+import com.redis.transaction.entity.AbstractTEntity;
+import com.redis.transaction.enums.CommitResult;
 
 /**
  * Created by jiangwenping on 16/11/26.
@@ -11,12 +10,15 @@ import com.redis.transaction.enums.GameTransactionCommitResult;
 public interface TransactionService {
     /**
      * 提交事务
+     *
      * @return
      */
-    public GameTransactionCommitResult commitTransaction(GameTransactionCause gameTransactionCause, AbstractGameTransactionEntity... abstractGameTransactionEntity);
+    public CommitResult commitTransaction(String gameTransactionCause, AbstractTEntity... abstractGameTransactionEntity);
+
     /**
      * 提交事务
+     *
      * @return
      */
-    public GameTransactionCommitResult commitTransaction(GameTransactionCause gameTransactionCause, long waitTime, AbstractGameTransactionEntity... abstractGameTransactionEntity);
+    public CommitResult commitTransaction(String gameTransactionCause, long waitTime, AbstractTEntity... abstractGameTransactionEntity);
 }

@@ -1,6 +1,5 @@
-package com.redis.transaction.force;
+package com.redis.transaction.entity;
 
-import com.redis.transaction.entity.AbstractTEntity;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.enums.TLockType;
 import com.redis.transaction.exception.TException;
@@ -8,12 +7,14 @@ import com.redis.transaction.service.RedisService;
 
 /**
  * Created by jiangwenping on 16/12/7.
+ * 读取实体
  */
-public class ForceEntity extends AbstractTEntity {
+public class TEnityImpl extends AbstractTEntity {
 
-    public ForceEntity(String cause, String key, RedisService redisService, TLockType gameTransactionLockType, int seconds) {
-        super(cause, key, redisService, gameTransactionLockType, seconds);
+    public TEnityImpl(String cause, String key, RedisService redisService) {
+        super(cause, key, redisService, TLockType.READ);
     }
+
 
     @Override
     public void commit() throws TException {
@@ -26,7 +27,9 @@ public class ForceEntity extends AbstractTEntity {
     }
 
     @Override
-    public CommitResult trycommit() throws TException {
+    public CommitResult trycommit()
+            throws TException {
         return CommitResult.SUCCESS;
     }
+
 }

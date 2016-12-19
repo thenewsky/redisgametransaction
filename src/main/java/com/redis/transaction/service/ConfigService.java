@@ -3,7 +3,6 @@ package com.redis.transaction.service;
 import com.redis.util.FileUtil;
 import com.redis.config.GlobalConstants;
 import com.redis.util.JdomUtils;
-import com.redis.util.StringUtils;
 import org.jdom.DataConversionException;
 import org.jdom.Element;
 import redis.clients.jedis.JedisPool;
@@ -13,9 +12,24 @@ import redis.clients.jedis.JedisPoolConfig;
  * Created by jiangwenping on 16/11/29.
  */
 public class ConfigService {
+    private static JedisPool jedisPool;
+    static {
+        try {
+            initRedis(GlobalConstants.RedisConfigFile.REDIS_CONFIG, initRediPoolConfig(GlobalConstants.RedisConfigFile.REDIS_POOL_CONIFG));
+        } catch (DataConversionException e) {
+            e.printStackTrace();
+        }
+    }
 
-    public JedisPoolConfig initRediPoolConfig() throws DataConversionException {
-        Element element = JdomUtils.getRootElemet(FileUtil.getConfigURL(GlobalConstants.RedisConfigFile.REDIS_POOL_CONIFG).getFile());
+    public static JedisPool getJedisPool() {
+        return jedisPool;
+    }
+
+    private ConfigService() {
+    }
+
+    private static JedisPoolConfig initRediPoolConfig(String jedisPoolConfigUrl) throws DataConversionException {
+        Element element = JdomUtils.getRootElemet(FileUtil.getConfigURL(jedisPoolConfigUrl).getFile());
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         int maxIdle = element.getAttribute("maxIdle").getIntValue();
         boolean testWhileIdle = element.getAttribute("testWhileIdle").getBooleanValue();
@@ -30,18 +44,20 @@ public class ConfigService {
         return jedisPoolConfig;
     }
 
-    public JedisPool initRedis(JedisPoolConfig jedisPoolConfig) throws DataConversionException {
-        Element element = JdomUtils.getRootElemet(FileUtil.getConfigURL(GlobalConstants.RedisConfigFile.REDIS).getFile());
+
+    public static void initRedis(String cfgUrl, JedisPoolConfig jedisPoolConfig) throws DataConversionException {
+        Element element = JdomUtils.getRootElemet(FileUtil.getConfigURL(cfgUrl).getFile());
         String host = element.getAttribute("host").getValue();
         int port = element.getAttribute("port").getIntValue();
-        boolean hasPassword = element.getAttribute("password") != null;
+        int timeout = element.getAttribute("timeout").getIntValue();
         int database = element.getAttribute("database").getIntValue();
-        JedisPool jedisPool = new JedisPool(jedisPoolConfig, host, port);
+        boolean hasPassword = element.getAttribute("password") != null;
         if (hasPassword) {
-            int timeout = element.getAttribute("timeout").getIntValue();
             String password = element.getAttribute("password").getValue();
             jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout, password, database);
+        } else {
+            jedisPool = new JedisPool(jedisPoolConfig, host, port, timeout);
         }
-        return jedisPool;
     }
+
 }

@@ -1,43 +1,42 @@
 package com.redis.transaction.timelock;
 
-import com.redis.transaction.entity.AbstractGameTransactionEntity;
-import com.redis.transaction.enums.GameTransactionCommitResult;
-import com.redis.transaction.enums.GameTransactionEntityCause;
-import com.redis.transaction.enums.GameTransactionLockType;
-import com.redis.transaction.exception.GameTransactionException;
+import com.redis.transaction.entity.AbstractTEntity;
+import com.redis.transaction.enums.CommitResult;
+import com.redis.transaction.enums.TLockType;
+import com.redis.transaction.exception.TException;
 import com.redis.transaction.service.RedisService;
 import com.redis.util.TimeUtil;
 
 /**
  * Created by jiangwenping on 16/12/9.
  */
-public class TestTimeMutexEntity extends AbstractGameTransactionEntity {
+public class TestTimeMutexEntity extends AbstractTEntity {
 
     private RedisService redisService;
-    public TestTimeMutexEntity(GameTransactionEntityCause cause, String key, RedisService redisService) {
-        super(cause, key, redisService, GameTransactionLockType.WRITE_TIME, TimeUtil.FIVE_MINUTE);
+    public TestTimeMutexEntity(String cause, String key, RedisService redisService) {
+        super(cause, key, redisService, TLockType.WRITE_TIME, TimeUtil.FIVE_MINUTE);
         this.redisService = redisService;
 
     }
 
     @Override
-    public void commit() throws GameTransactionException {
+    public void commit() throws TException {
         String testRedisKey =  "testRedis";
         redisService.setString(testRedisKey, "1000");
     }
 
     @Override
-    public void rollback() throws GameTransactionException {
+    public void rollback() throws TException {
 
     }
 
     @Override
-    public GameTransactionCommitResult trycommit() throws GameTransactionException {
+    public CommitResult trycommit() throws TException {
 //        String testRedisKey =  "testRedis";
 //        if(redisService.getString(testRedisKey).equals("1000")){
-//            return GameTransactionCommitResult.COMMON_ERROR;
+//            return CommitResult.COMMON_ERROR;
 //        }
-        return GameTransactionCommitResult.SUCCESS;
+        return CommitResult.SUCCESS;
     }
 
 }

@@ -33,7 +33,7 @@ public class GlobalConstants {
         /**
          * redis
          */
-        public static final String REDIS = "redis_data.xml";
+        public static final String REDIS_CONFIG = "redis_data.xml";
     }
 
     /**

@@ -4,7 +4,7 @@ package com.redis.transaction.enums;
  * Created by jiangwenping on 16/11/26.
  * 事务锁状态
  */
-public enum  GameTransactionLockStateEnum {
+public enum TLockState {
     /**
      * 初始化
      */

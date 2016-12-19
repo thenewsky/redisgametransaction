@@ -1,11 +1,11 @@
 package com.redis.transaction.read;
 
-import com.redis.transaction.GameTransactionCauseImpl;
-import com.redis.transaction.GameTransactionEntityCauseImpl;
-import com.redis.transaction.GameTransactionEntityFactoryImpl;
+import com.redis.transaction.TName;
+import com.redis.transaction.TEntityName;
+import com.redis.transaction.TEntityFactoryImpl;
 import com.redis.transaction.RedisKey;
-import com.redis.transaction.entity.CommonReadTransactionEnity;
-import com.redis.transaction.enums.GameTransactionCommitResult;
+import com.redis.transaction.entity.TEnityImpl;
+import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.service.ConfigService;
 import com.redis.transaction.service.RedisService;
 import com.redis.transaction.service.TransactionService;
@@ -16,18 +16,20 @@ import com.redis.transaction.service.TransactionServiceImpl;
  */
 public class TestReadTransaction {
     public static void main(String[] args) throws Exception {
-        ConfigService configService = new ConfigService();
+
+
         RedisService redisService = new RedisService();
-        redisService.setJedisPool(configService.initRedis(configService.initRediPoolConfig()));
+        redisService.setJedisPool(ConfigService.getJedisPool());//绑定redis数据源
 
         TransactionService transactionService = new TransactionServiceImpl();
         String union = "union";
-        CommonReadTransactionEnity commonReadTransactionEnity = GameTransactionEntityFactoryImpl.createNormalCommonReadTransactionEnity(GameTransactionEntityCauseImpl.read, redisService, RedisKey.common, union);
-        GameTransactionCommitResult commitResult = transactionService.commitTransaction(GameTransactionCauseImpl.read, commonReadTransactionEnity);
+        TEnityImpl readTEnity = TEntityFactoryImpl.createReadTEnity(TEntityName.read, redisService, RedisKey.common, union);
+        TEnityImpl readTEnity1 = TEntityFactoryImpl.createReadTEnity(TEntityName.test, redisService, RedisKey.common, union);
+        CommitResult commitResult = transactionService.commitTransaction(TName.read, readTEnity,readTEnity1);
         System.out.println(commitResult.getReuslt());
 
-        CommonReadTransactionEnity commonRejectReadTransactionEnity = GameTransactionEntityFactoryImpl.createCommonReadRejectTransactionEnity(GameTransactionEntityCauseImpl.read, redisService, RedisKey.common, union);
-        commitResult = transactionService.commitTransaction(GameTransactionCauseImpl.read, commonRejectReadTransactionEnity);
-        System.out.println(commitResult.getReuslt());
+//        TEnityImpl commonRejectReadTransactionEnity = TEntityFactoryImpl.createReadRejectTEnity(TEntityName.read, redisService, RedisKey.common, union);
+//        commitResult = transactionService.commitTransaction(TName.read, commonRejectReadTransactionEnity);
+//        System.out.println(commitResult.getReuslt());
     }
 }

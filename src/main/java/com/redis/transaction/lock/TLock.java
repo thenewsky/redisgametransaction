@@ -1,12 +1,12 @@
 package com.redis.transaction.lock;
 
-import com.redis.transaction.exception.GameTransactionException;
+import com.redis.transaction.exception.TException;
 
 /**
  * Created by jiangwenping on 16/11/26
  * 事务接口
  */
-public interface GameTransactionLockInterface {
+public interface TLock {
     /**
      * 销毁
      */
@@ -16,7 +16,7 @@ public interface GameTransactionLockInterface {
      * 创建
      * @return
      */
-    public boolean create(long seconds)  throws GameTransactionException;
+    public boolean create(long seconds)  throws TException;
 
     /**
      * 获取信息

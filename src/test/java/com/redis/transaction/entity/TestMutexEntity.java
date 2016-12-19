@@ -1,41 +1,40 @@
 package com.redis.transaction.entity;
 
-import com.redis.transaction.enums.GameTransactionCommitResult;
-import com.redis.transaction.enums.GameTransactionEntityCause;
-import com.redis.transaction.exception.GameTransactionException;
+import com.redis.transaction.enums.CommitResult;
+import com.redis.transaction.exception.TException;
 import com.redis.transaction.service.RedisService;
 
 /**
  * Created by jiangwenping on 16/12/6.
  * 设置一个数据到redis
  */
-public class TestMutexEntity extends AbstractGameTransactionEntity{
+public class TestMutexEntity extends AbstractTEntity {
 
     private RedisService redisService;
-    public TestMutexEntity(GameTransactionEntityCause cause, String key, RedisService redisService) {
+    public TestMutexEntity(String cause, String key, RedisService redisService) {
         super(cause, key, redisService);
         this.redisService = redisService;
 
     }
 
     @Override
-    public void commit() throws GameTransactionException {
+    public void commit() throws TException {
         String testRedisKey =  "testRedis";
         redisService.setString(testRedisKey, "1000");
     }
 
     @Override
-    public void rollback() throws GameTransactionException {
+    public void rollback() throws TException {
 
     }
 
     @Override
-    public GameTransactionCommitResult trycommit() throws GameTransactionException {
+    public CommitResult trycommit() throws TException {
 //        String testRedisKey =  "testRedis";
 //        if(redisService.getString(testRedisKey).equals("1000")){
-//            return GameTransactionCommitResult.COMMON_ERROR;
+//            return CommitResult.COMMON_ERROR;
 //        }
-        return GameTransactionCommitResult.SUCCESS;
+        return CommitResult.SUCCESS;
     }
 
 }
