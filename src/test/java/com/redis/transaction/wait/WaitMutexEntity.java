@@ -1,17 +1,17 @@
 package com.redis.transaction.wait;
 
+import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.entity.AbstractTEntity;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.exception.TException;
-import com.redis.transaction.service.RedisService;
 
 /**
  * Created by jiangwenping on 16/12/15.
  */
 public class WaitMutexEntity extends AbstractTEntity {
 
-    private RedisService redisService;
-    public WaitMutexEntity(String cause, String key, RedisService redisService) {
+    private RedisDaoImpl redisService;
+    public WaitMutexEntity(String cause, String key, RedisDaoImpl redisService) {
         super(cause, key, redisService);
         this.redisService = redisService;
 

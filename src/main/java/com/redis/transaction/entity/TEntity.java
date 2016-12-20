@@ -31,14 +31,14 @@ public interface TEntity {
      *
      * @return
      */
-    public boolean createLock(long seconds) throws TException;
+    public boolean lock(long seconds) throws TException;
 
     /**
      * 释放锁
      *
      * @return
      */
-    public void release();
+    public void unlock();
 
     /**
      * 强制释放锁

@@ -9,7 +9,7 @@ public enum CommitResult {
     /**
      * 成功
      */
-    SUCCESS("success"),
+    SUCCESS("LOCKED"),
     /**
      * 失败
      */

@@ -7,7 +7,7 @@ import com.redis.transaction.RedisKey;
 import com.redis.transaction.entity.TestMutexEntity;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.service.ConfigService;
-import com.redis.transaction.service.RedisService;
+import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.service.TransactionService;
 import com.redis.transaction.service.TransactionServiceImpl;
 
@@ -17,7 +17,7 @@ import com.redis.transaction.service.TransactionServiceImpl;
 public class AttachmentTest {
 
     public static void main(String[] args) throws Exception {
-        RedisService redisService = new RedisService();
+        RedisDaoImpl redisService = new RedisDaoImpl();
         redisService.setJedisPool(ConfigService.getJedisPool());
 
         TransactionService transactionService = new TransactionServiceImpl();

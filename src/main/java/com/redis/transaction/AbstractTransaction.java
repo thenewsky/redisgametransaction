@@ -14,7 +14,7 @@ import java.util.List;
  * @author C172
  *         抽象游戏事务
  */
-public abstract class AbstractGameTransaction implements GameTransaction {
+public abstract class AbstractTransaction implements GameTransaction {
 
     /**
      * 当前执行状态
@@ -34,7 +34,7 @@ public abstract class AbstractGameTransaction implements GameTransaction {
      */
     protected CommitResult gameTransactionTryCommitResult;
 
-    public AbstractGameTransaction(String cause) {
+    public AbstractTransaction(String cause) {
         this.cause = cause;
         this.entities = new ArrayList<TEntity>();
         gameTransactionTryCommitResult = CommitResult.SUCCESS;

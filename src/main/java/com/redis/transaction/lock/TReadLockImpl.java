@@ -1,9 +1,9 @@
 package com.redis.transaction.lock;
 
 import com.redis.log.Loggers;
+import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.enums.TLockState;
 import com.redis.transaction.exception.TException;
-import com.redis.transaction.service.RedisService;
 import com.redis.util.StringUtils;
 import org.slf4j.Logger;
 
@@ -23,7 +23,7 @@ public class TReadLockImpl implements TLock {
     /**
      * redis
      */
-    private RedisService redisService;
+    private RedisDaoImpl redisService;
 
     /**
      * 事务原因
@@ -40,29 +40,29 @@ public class TReadLockImpl implements TLock {
      */
     private String lockContent = "";
 
-    public TReadLockImpl(String lockKey, RedisService redisService, String gameTransactionEntityCause) {
+    public TReadLockImpl(String lockKey, RedisDaoImpl redisService, String gameTransactionEntityCause) {
         super();
         this.lockKey = lockKey;
         this.redisService = redisService;
         this.gameTransactionEntityCause = gameTransactionEntityCause;
-        this.lockState = TLockState.init;
+        this.lockState = TLockState.INIT;
     }
 
     public TReadLockImpl(String lockKey, String gameTransactionEntityCause) {
         super();
         this.lockKey = lockKey;
         this.gameTransactionEntityCause = gameTransactionEntityCause;
-        this.lockState = TLockState.init;
+        this.lockState = TLockState.INIT;
     }
 
     @Override
-    public void destroy() {
+    public void unLock() {
 
     }
 
     @Override
-    public boolean create(long seconds) throws TException {
-        this.lockState = TLockState.create;
+    public boolean lock(long seconds) throws TException {
+        this.lockState = TLockState.LOCKING;
         String realLockKey = getLockKey(lockKey, gameTransactionEntityCause);
         logger.info("read  realLockKey:" + realLockKey);
         boolean detectflag = redisService.exists(realLockKey);

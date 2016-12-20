@@ -1,10 +1,10 @@
 package com.redis.transaction.timelock;
 
+import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.entity.AbstractTEntity;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.enums.TLockType;
 import com.redis.transaction.exception.TException;
-import com.redis.transaction.service.RedisService;
 import com.redis.util.TimeUtil;
 
 /**
@@ -12,8 +12,8 @@ import com.redis.util.TimeUtil;
  */
 public class TestTimeMutexEntity extends AbstractTEntity {
 
-    private RedisService redisService;
-    public TestTimeMutexEntity(String cause, String key, RedisService redisService) {
+    private RedisDaoImpl redisService;
+    public TestTimeMutexEntity(String cause, String key, RedisDaoImpl redisService) {
         super(cause, key, redisService, TLockType.WRITE_TIME, TimeUtil.FIVE_MINUTE);
         this.redisService = redisService;
 
@@ -37,6 +37,11 @@ public class TestTimeMutexEntity extends AbstractTEntity {
 //            return CommitResult.COMMON_ERROR;
 //        }
         return CommitResult.SUCCESS;
+    }
+
+    @Override
+    public String getInfo() {
+        return null;
     }
 
 }

@@ -58,17 +58,29 @@ public interface GameTransaction {
     public String getCause();
 
     /**
-     * 是否可以创建锁
+     *
+     * [
+     * entity1_lock
+     * entity2_lock
+     * ....
+     * entityn_lock
+     * ]
      *
      * @return
      */
-    public boolean createGameTransactionLock() throws TException;
+    public boolean lockAll() throws TException;
 
 
     /**
-     * 释放锁
+     *
+     * [
+     * entity1_unlock
+     * entity2_unlock
+     * ....
+     * entityn_unlock
+     * ]
      *
      * @return
      */
-    public void releaseGameTransactionLock();
+    public void unlockAll();
 }

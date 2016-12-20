@@ -1,12 +1,12 @@
 package com.redis.transaction.entity;
 
 import com.redis.log.Loggers;
+import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.enums.TLockType;
 import com.redis.transaction.exception.TException;
 import com.redis.transaction.lock.TLockImpl;
 import com.redis.transaction.lock.TLock;
 import com.redis.transaction.lock.TReadLockImpl;
-import com.redis.transaction.service.RedisService;
 import org.slf4j.Logger;
 
 import java.util.BitSet;
@@ -40,11 +40,11 @@ public abstract class AbstractTEntity implements TEntity {
     private boolean rejectFlag = false;
 
     //defult
-    public AbstractTEntity(String cause, String key, RedisService redisService) {
+    public AbstractTEntity(String cause, String key, RedisDaoImpl redisService) {
         this(cause, key, redisService, TLockType.WRITE);
     }
 
-    public AbstractTEntity(String cause, String key, RedisService redisService, TLockType gameTransactionLockType) {
+    public AbstractTEntity(String cause, String key, RedisDaoImpl redisService, TLockType gameTransactionLockType) {
         this.progressBitSet = new BitSet();
         this.tLock = new TLockImpl(key, redisService, cause);
         this.tLockType = gameTransactionLockType;
@@ -56,9 +56,9 @@ public abstract class AbstractTEntity implements TEntity {
      * @param key
      * @param redisService
      * @param tLockType
-     * @param lockTime                此参数只针对 非readlock锁
+     * @param lockTime     此参数只针对 非readlock锁
      */
-    public AbstractTEntity(String cause, String key, RedisService redisService, TLockType tLockType, long lockTime) {
+    public AbstractTEntity(String cause, String key, RedisDaoImpl redisService, TLockType tLockType, long lockTime) {
         this.progressBitSet = new BitSet();
         this.tLockType = tLockType;
 
@@ -105,8 +105,8 @@ public abstract class AbstractTEntity implements TEntity {
     }
 
     @Override
-    public boolean createLock(long seconds) throws TException {
-        boolean result = tLock.create(seconds);
+    public boolean lock(long seconds) throws TException {
+        boolean result = tLock.lock(seconds);
         if (rejectFlag) {
             result = !result;
         }
@@ -114,24 +114,19 @@ public abstract class AbstractTEntity implements TEntity {
     }
 
     @Override
-    public void release() {
+    public void unlock() {
         //时间占有锁，不释放锁
-        if (tLockType.equals(TLockType.WRITE_TIME)
-                || tLockType.equals(TLockType.FORCE_WRITE_TIME)) {
+        if (tLockType == TLockType.WRITE_TIME || tLockType == TLockType.FORCE_WRITE_TIME) {
             return;
         }
-        tLock.destroy();
+        tLock.unLock();
     }
 
     @Override
     public void forceRelease() {
-        tLock.destroy();
+        tLock.unLock();
     }
 
-
-    public String getInfo() {
-        return tLockType + "类型" + tLock.getInfo();
-    }
 
     /**
      * 是否需要执行

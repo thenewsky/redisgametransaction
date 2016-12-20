@@ -1,9 +1,11 @@
 package com.redis.transaction.lock;
 
 import com.redis.log.Loggers;
+import com.redis.transaction.db.RedisDaoImpl;
+import com.redis.transaction.db.RedisKeyUtil;
 import com.redis.transaction.enums.TLockState;
 import com.redis.transaction.exception.TException;
-import com.redis.transaction.service.RedisService;
+import com.redis.transaction.db.DBDao;
 import com.redis.util.StringUtils;
 import com.redis.util.TimeUtil;
 import org.slf4j.Logger;
@@ -13,10 +15,7 @@ import org.slf4j.Logger;
  * 写锁
  */
 public class TLockImpl implements TLock {
-
-
     protected static Logger logger = Loggers.lockLogger;
-
     /**
      * 对应的锁key
      */
@@ -24,8 +23,8 @@ public class TLockImpl implements TLock {
     /**
      * redis
      */
-    private RedisService redisService;
-    private String tEntityName;
+    private DBDao dbDao;
+    private String name;
     /**
      * 锁定状态
      */
@@ -44,30 +43,30 @@ public class TLockImpl implements TLock {
     private String lockContent = "";
 
 
-    public TLockImpl(String lockKey, RedisService redisService, String tEntityName) {
+    public TLockImpl(String lockKey, RedisDaoImpl redisService, String tEntityName) {
         this(lockKey, redisService, tEntityName, TimeUtil.MINUTE_SECOND, false);
     }
 
-    public TLockImpl(String lockKey, RedisService redisService, String tEntityName, long lockTime, boolean forceFlag, String lockContent) {
+    public TLockImpl(String lockKey, RedisDaoImpl redisService, String tEntityName, long lockTime, boolean forceFlag, String lockContent) {
         this(lockKey, redisService, tEntityName, lockTime, forceFlag);
         this.lockContent = lockContent;
     }
 
-    public TLockImpl(String lockKey, RedisService redisService, String tEntityName, long lockTime, boolean forceFlag) {
+    public TLockImpl(String lockKey, RedisDaoImpl redisService, String tEntityName, long lockTime, boolean forceFlag) {
         super();
         this.lockKey = lockKey;
-        this.redisService = redisService;
-        this.tEntityName = tEntityName;
-        this.lockState = TLockState.init;
+        this.dbDao = redisService;
+        this.name = tEntityName;
+        this.lockState = TLockState.INIT;
         this.lockTime = lockTime;
         this.forceFlag = forceFlag;
     }
 
 
     @Override
-    public void destroy() {
+    public void unLock() {
         //初始化状态不需要销毁
-        if (this.lockState.equals(TLockState.init) || this.lockState.equals(TLockState.create)) {
+        if (this.lockState.equals(TLockState.INIT) || this.lockState.equals(TLockState.LOCKING)) {
             return;
         }
 
@@ -76,45 +75,40 @@ public class TLockImpl implements TLock {
             deleteFlag = checkContent();
         }
         if (deleteFlag) {
-            boolean flag = redisService.deleteKey(getLockKey(lockKey, tEntityName));
+            boolean flag = dbDao.deleteKey(RedisKeyUtil.getLockKey(lockKey, name));
             if (!flag) {
-                logger.info("TLockImpl" + lockKey + ":tEntityName" + tEntityName.toString() + "destroy is error");
+                logger.info("TLockImpl" + lockKey + ":name" + name + "unLock is error");
             }
         }
     }
 
     @Override
-    public boolean create(long seconds) throws TException {
-        this.lockState = TLockState.create;
-        boolean createFlag = false;
-
+    public boolean lock(long seconds) throws TException {
+        this.lockState = TLockState.LOCKING;
+        boolean isLocked = false;
         try {
-
-            String realLockKey = getLockKey(lockKey, tEntityName);
+            String realLockKey = RedisKeyUtil.getLockKey(lockKey, name);
             logger.info("realLockKey:" + realLockKey);
-            createFlag = redisService.setNxString(realLockKey, lockContent, getLockTime());
-            if (createFlag) {
-                logger.info("create realLockKey:" + realLockKey + ",time: " + getLockTime());
-                this.lockState = TLockState.success;
-                redisService.expire(realLockKey, getLockTime());
+            isLocked = dbDao.setNxString(realLockKey, lockContent, getLockTime());
+            if (isLocked) {
+                logger.info("lockAll realLockKey:" + realLockKey + ",time: " + getLockTime());
+                this.lockState = TLockState.LOCKED;
             } else {
                 if (forceFlag) {
-                    this.lockState = TLockState.success;
-                    redisService.setString(realLockKey, lockContent, getLockTime());
-                    redisService.expire(realLockKey, getLockTime());
-                    createFlag = true;
-                    logger.info("forece create realLockKey:" + realLockKey + ",time: " + getLockTime());
+                    this.lockState = TLockState.LOCKED;
+                    dbDao.setString(realLockKey, lockContent, getLockTime());//强得锁
+                    isLocked = true;
+                    logger.info("forece lockAll realLockKey:" + realLockKey + ",time: " + getLockTime());
                 } else {
-                    logger.info("create error realLockKey:" + realLockKey + ",time: " + getLockTime());
+                    logger.info("lockAll error realLockKey:" + realLockKey + ",time: " + getLockTime());
                 }
             }
         } catch (Exception e) {
             throw new TException(e.toString());
         }
 
-        return createFlag;
+        return isLocked;
     }
-
 
 
     /**
@@ -137,28 +131,8 @@ public class TLockImpl implements TLock {
      * @return
      */
     public boolean checkContent() {
-        String content = redisService.getString(getLockKey(lockKey, tEntityName));
+        String content = dbDao.getString(RedisKeyUtil.getLockKey(lockKey, name));
         return !StringUtils.isEmptyString(content) ? content.equals(this.lockContent) : false;
-    }
-
-
-    /**
-     * 获取锁Key
-     *
-     * @param lockKey
-     * @param GameTransactionEntityCause
-     * @return
-     */
-    public String getLockKey(String lockKey, String GameTransactionEntityCause) {
-        return lockKey + "#" + tEntityName.toString();
-    }
-    /**
-     * 获取信息
-     *
-     * @return
-     */
-    public String getInfo() {
-        return lockKey + StringUtils.DEFAULT_SPLIT + tEntityName.toString() + StringUtils.DEFAULT_SPLIT + this.lockState;
     }
 
 

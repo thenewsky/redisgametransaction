@@ -4,9 +4,9 @@ import com.redis.transaction.TName;
 import com.redis.transaction.TEntityName;
 import com.redis.transaction.TEntityFactoryImpl;
 import com.redis.transaction.RedisKey;
+import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.service.ConfigService;
-import com.redis.transaction.service.RedisService;
 import com.redis.transaction.service.TransactionService;
 import com.redis.transaction.service.TransactionServiceImpl;
 import com.redis.util.TimeUtil;
@@ -17,7 +17,7 @@ import com.redis.util.TimeUtil;
 public class WaitMutexTransaction {
     public static void main(String[] args) throws Exception {
 
-        RedisService redisService = new RedisService();
+        RedisDaoImpl redisService = new RedisDaoImpl();
         redisService.setJedisPool(ConfigService.getJedisPool());
 
         TransactionService transactionService = new TransactionServiceImpl();

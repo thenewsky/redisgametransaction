@@ -8,11 +8,11 @@ public enum TLockState {
     /**
      * 初始化
      */
-    init,
+    INIT,
 
-    /** 创建*/
-    create,
+    /** 锁定中 */
+    LOCKING,
 
-    /**成功*/
-    success,
+    /**lockAll 创建成功*/
+    LOCKED,
 }

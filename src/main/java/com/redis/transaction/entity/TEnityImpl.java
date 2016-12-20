@@ -1,9 +1,9 @@
 package com.redis.transaction.entity;
 
+import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.enums.TLockType;
 import com.redis.transaction.exception.TException;
-import com.redis.transaction.service.RedisService;
 
 /**
  * Created by jiangwenping on 16/12/7.
@@ -11,7 +11,7 @@ import com.redis.transaction.service.RedisService;
  */
 public class TEnityImpl extends AbstractTEntity {
 
-    public TEnityImpl(String cause, String key, RedisService redisService) {
+    public TEnityImpl(String cause, String key, RedisDaoImpl redisService) {
         super(cause, key, redisService, TLockType.READ);
     }
 

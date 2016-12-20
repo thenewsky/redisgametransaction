@@ -21,7 +21,7 @@ public class FileUtil {
      */
     public static void createDir(File dir) {
         if (!dir.exists() && !dir.mkdirs()) {
-            throw new RuntimeException("Can't create the dir [" + dir + "]");
+            throw new RuntimeException("Can't lockAll the dir [" + dir + "]");
         }
     }
 

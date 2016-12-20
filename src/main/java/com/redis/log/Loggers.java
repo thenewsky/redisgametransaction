@@ -20,5 +20,5 @@ public class Loggers {
     /**
      * lock相关的日志
      */
-    public static final Logger lockLogger = LoggerFactory.getLogger("lock");
+    public static final Logger lockLogger = LoggerFactory.getLogger("lockAll");
 }

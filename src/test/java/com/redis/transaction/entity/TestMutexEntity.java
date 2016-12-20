@@ -2,7 +2,7 @@ package com.redis.transaction.entity;
 
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.exception.TException;
-import com.redis.transaction.service.RedisService;
+import com.redis.transaction.db.RedisDaoImpl;
 
 /**
  * Created by jiangwenping on 16/12/6.
@@ -10,8 +10,8 @@ import com.redis.transaction.service.RedisService;
  */
 public class TestMutexEntity extends AbstractTEntity {
 
-    private RedisService redisService;
-    public TestMutexEntity(String cause, String key, RedisService redisService) {
+    private RedisDaoImpl redisService;
+    public TestMutexEntity(String cause, String key, RedisDaoImpl redisService) {
         super(cause, key, redisService);
         this.redisService = redisService;
 

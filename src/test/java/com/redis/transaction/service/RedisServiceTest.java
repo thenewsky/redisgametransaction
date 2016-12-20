@@ -1,5 +1,6 @@
 package com.redis.transaction.service;
 
+import com.redis.transaction.db.RedisDaoImpl;
 import org.jdom.DataConversionException;
 
 /**
@@ -7,7 +8,7 @@ import org.jdom.DataConversionException;
  */
 public class RedisServiceTest {
     public static void main(String[] args) throws DataConversionException {
-        RedisService redisService = new RedisService();
+        RedisDaoImpl redisService = new RedisDaoImpl();
         redisService.setJedisPool(ConfigService.getJedisPool());
 
         String testKey = "ketest100";

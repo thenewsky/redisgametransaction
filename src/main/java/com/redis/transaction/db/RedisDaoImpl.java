@@ -1,4 +1,4 @@
-package com.redis.transaction.service;
+package com.redis.transaction.db;
 
 import com.redis.log.Loggers;
 import org.slf4j.Logger;
@@ -9,7 +9,7 @@ import redis.clients.jedis.JedisPool;
  * Created by jiangwenping on 16/11/26.
  * 提供redis读取服务
  */
-public class RedisService{
+public class RedisDaoImpl implements DBDao {
 
     protected static Logger logger = Loggers.redisLogger;
     /*
@@ -118,23 +118,23 @@ public class RedisService{
 
     /**
      * 设置
-     * @param key
+     * @param lockName
      * @param value
      * @return
      */
-    public boolean setNxString(String key, String value, int seconds) throws Exception{
+    public boolean setNxString(String lockName, String value, int seconds) throws Exception{
         Jedis jedis = null;
         boolean success = true;
         boolean result = false;
         try {
             jedis = jedisPool.getResource();
-            result = (jedis.setnx(key, value) != 0);
+            result = (jedis.setnx(lockName, value) != 0);
             if(seconds > -1){
-                jedis.expire(key, seconds);
+                jedis.expire(lockName, seconds);
             }
         } catch (Exception e) {
             success = false;
-            releasBrokenReidsSource(jedis, key, "setNxString", e, false);
+            releasBrokenReidsSource(jedis, lockName, "setNxString", e, false);
             throw e;
         } finally {
             releaseReidsSource(success, jedis);

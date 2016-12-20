@@ -13,12 +13,12 @@ public interface TransactionService {
      *
      * @return
      */
-    public CommitResult commitTransaction(String gameTransactionCause, AbstractTEntity... abstractGameTransactionEntity);
+    public CommitResult commitTransaction(String name, AbstractTEntity... abstractGameTransactionEntity);
 
     /**
      * 提交事务
      *
      * @return
      */
-    public CommitResult commitTransaction(String gameTransactionCause, long waitTime, AbstractTEntity... abstractGameTransactionEntity);
+    public CommitResult commitTransaction(String name, long waitTime, AbstractTEntity... abstractGameTransactionEntity);
 }

@@ -7,23 +7,19 @@ import com.redis.transaction.exception.TException;
  * 事务接口
  */
 public interface TLock {
-    /**
-     * 销毁
-     */
-    public void destroy();
+
 
     /**
-     * 创建
+     * 依赖DB创建的锁
      * @return
      */
-    public boolean create(long seconds)  throws TException;
-
-    /**
-     * 获取信息
-     * @return
-     */
-    public String getInfo();
-
+    public boolean lock(long seconds)  throws TException;
+    public void unLock();
+//    /**
+//     * 获取信息
+//     * @return
+//     */
+//    public String getInfo();
     /**
      * 设置内容
      */
