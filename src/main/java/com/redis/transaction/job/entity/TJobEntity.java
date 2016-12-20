@@ -1,4 +1,4 @@
-package com.redis.transaction.entity;
+package com.redis.transaction.job.entity;
 
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.exception.TException;
@@ -8,7 +8,7 @@ import com.redis.transaction.lock.TLock;
  * Created by jiangwenping on 16/11/26.
  * 游戏事务实体接口
  */
-public interface TEntity {
+public interface TJobEntity {
 
     /**
      * 执行

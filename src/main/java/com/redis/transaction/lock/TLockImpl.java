@@ -83,7 +83,17 @@ public class TLockImpl implements TLock {
     }
 
     @Override
-    public boolean lock(long seconds) throws TException {
+    /**
+     * 获取信息
+     *
+     * @return
+     */
+    public String getInfo() {
+        return lockKey + StringUtils.DEFAULT_SPLIT + name.toString() + StringUtils.DEFAULT_SPLIT + this.lockState;
+    }
+
+    @Override
+    public boolean lock(long uuid) throws TException {
         this.lockState = TLockState.LOCKING;
         boolean isLocked = false;
         try {

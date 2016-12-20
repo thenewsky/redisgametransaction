@@ -28,7 +28,7 @@ public class TReadLockImpl implements TLock {
     /**
      * 事务原因
      */
-    private String gameTransactionEntityCause;
+    private String tName;
 
     /**
      * 锁定状态
@@ -44,14 +44,14 @@ public class TReadLockImpl implements TLock {
         super();
         this.lockKey = lockKey;
         this.redisService = redisService;
-        this.gameTransactionEntityCause = gameTransactionEntityCause;
+        this.tName = gameTransactionEntityCause;
         this.lockState = TLockState.INIT;
     }
 
     public TReadLockImpl(String lockKey, String gameTransactionEntityCause) {
         super();
         this.lockKey = lockKey;
-        this.gameTransactionEntityCause = gameTransactionEntityCause;
+        this.tName = gameTransactionEntityCause;
         this.lockState = TLockState.INIT;
     }
 
@@ -63,7 +63,7 @@ public class TReadLockImpl implements TLock {
     @Override
     public boolean lock(long seconds) throws TException {
         this.lockState = TLockState.LOCKING;
-        String realLockKey = getLockKey(lockKey, gameTransactionEntityCause);
+        String realLockKey = getLockKey(lockKey, tName);
         logger.info("read  realLockKey:" + realLockKey);
         boolean detectflag = redisService.exists(realLockKey);
         if (detectflag && !StringUtils.isEmptyString(this.lockContent)) {
@@ -74,7 +74,7 @@ public class TReadLockImpl implements TLock {
 
     @Override
     public String getInfo() {
-        return lockKey + StringUtils.DEFAULT_SPLIT + gameTransactionEntityCause.toString() + StringUtils.DEFAULT_SPLIT + this.lockState;
+        return lockKey + StringUtils.DEFAULT_SPLIT + tName.toString() + StringUtils.DEFAULT_SPLIT + this.lockState;
     }
 
 
@@ -86,7 +86,7 @@ public class TReadLockImpl implements TLock {
      * @return
      */
     public String getLockKey(String lockKey, String GameTransactionEntityCause) {
-        return lockKey + "#" + gameTransactionEntityCause;
+        return lockKey + "#" + tName;
     }
 
     @Override
@@ -101,7 +101,7 @@ public class TReadLockImpl implements TLock {
      */
     public boolean checkContent() {
         boolean checkFlag = false;
-        String realLockKey = getLockKey(lockKey, gameTransactionEntityCause);
+        String realLockKey = getLockKey(lockKey, tName);
         String content = redisService.getString(realLockKey);
         if (!StringUtils.isEmptyString(content)) {
             logger.info("read content realLockKey:" + realLockKey);

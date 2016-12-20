@@ -1,12 +1,12 @@
 package com.redis.transaction;
 
-import com.redis.transaction.entity.TEntity;
+import com.redis.transaction.job.entity.TJobEntity;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.exception.TException;
 import com.redis.util.TimeUtil;
 
 /**
- * Created by jiangwenping on 16/12/6.
+ * 事务合集用于调度 all entity
  */
 public class TransactionImpl extends AbstractTransaction {
 
@@ -26,7 +26,7 @@ public class TransactionImpl extends AbstractTransaction {
         if (state != TRY_COMMITED)
             throw new TException();
         this.state = COMMITED;
-        for (TEntity entity : entities) {
+        for (TJobEntity entity : entities) {
             if (!entity.needCommit()) {
                 continue;
             }
@@ -37,34 +37,24 @@ public class TransactionImpl extends AbstractTransaction {
     public void rollback() throws TException {
         //无条件进行回滚
         this.state = ROLLBACK;
-        for (TEntity entity : entities) {
+        for (TJobEntity entity : entities) {
             entity.rollback();
         }
     }
 
 
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("[PLAYERTRANSACTION]");
-        for (TEntity entity : entities) {
-            sb.append(entity.toString());
-        }
-        return sb.toString();
-    }
-
-    @Override
     public void trycommit() throws TException {
         if (state != ACTIVE)
             throw new TException("TransactionImpl is active, can't trycommit");
         this.state = TRY_COMMITED;
-        for (TEntity entity : entities) {
+        for (TJobEntity entity : entities) {
             if (!entity.needCommit()) {
                 continue;
             }
             CommitResult gameTransactionEntityTryCommitResult = entity.trycommit();
             if (!gameTransactionEntityTryCommitResult.equals(CommitResult.SUCCESS)) {
-                this.gameTransactionTryCommitResult = gameTransactionEntityTryCommitResult;
+                this.commitResult = gameTransactionEntityTryCommitResult;
                 break;
             }
         }
@@ -79,8 +69,8 @@ public class TransactionImpl extends AbstractTransaction {
         long startSecond = TimeUtil.getSeconds();
         if (waitTime > 0) {
             for (; ; ) {
-                long currSeconds = TimeUtil.getSeconds();
-                creatflag = createOnceGameTransactionLock(currSeconds);
+                long uuid = TimeUtil.getSeconds();//lock 唯一id  粒度 自定义.目前为秒
+                creatflag = lockAllEntities(uuid);
                 if (creatflag = true) {
                     break;
                 }
@@ -91,24 +81,24 @@ public class TransactionImpl extends AbstractTransaction {
 
                 }
 
-                currSeconds = TimeUtil.getSeconds();
-                if (startSecond + waitTime < currSeconds) {
+                uuid = TimeUtil.getSeconds();
+                if (startSecond + waitTime < uuid) {
                     creatflag = false;
                     break;
                 }
             }
         } else {
             long seconds = TimeUtil.getSeconds();
-            creatflag = createOnceGameTransactionLock(startSecond);
+            creatflag = lockAllEntities(startSecond);
         }
         return creatflag;
     }
 
-    public boolean createOnceGameTransactionLock(long seconds) throws TException {
+    public boolean lockAllEntities(long uuid) throws TException {
         boolean creatFlag = false;
-        for (TEntity entity : entities) {
+        for (TJobEntity entity : entities) {
             try {
-                creatFlag = entity.lock(seconds);
+                creatFlag = entity.lock(uuid);
             } catch (Exception e) {
                 throw new TException(e.getMessage());
             }
@@ -122,23 +112,20 @@ public class TransactionImpl extends AbstractTransaction {
 
     @Override
     public void unlockAll() {
-        for (TEntity entity : entities) {
+        for (TJobEntity entity : entities) {
             entity.unlock();
         }
     }
 
-    /**
-     * 获取事务信息
-     *
-     * @return
-     */
-    public String getTransactionInfo() {
-        StringBuffer buffer = new StringBuffer();
+
+    @Override
+    public String toString() {
+        final StringBuffer buffer = new StringBuffer();
         buffer.append("transaction ");
-        buffer.append(getCause());
+        buffer.append(getName());
         buffer.append(":");
         for (int i = 0; i < entities.size(); i++) {
-            TEntity entity = entities.get(i);
+            TJobEntity entity = entities.get(i);
             buffer.append(entity.getInfo());
             if (i < entities.size() - 1) {
                 buffer.append(",");

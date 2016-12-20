@@ -19,7 +19,7 @@ public interface TLock {
 //     * 获取信息
 //     * @return
 //     */
-//    public String getInfo();
+    public String getInfo();
     /**
      * 设置内容
      */

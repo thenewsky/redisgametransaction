@@ -1,14 +1,14 @@
 package com.redis.transaction.wait;
 
 import com.redis.transaction.db.RedisDaoImpl;
-import com.redis.transaction.entity.AbstractTEntity;
+import com.redis.transaction.job.entity.AbstractTJobEntity;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.exception.TException;
 
 /**
  * Created by jiangwenping on 16/12/15.
  */
-public class WaitMutexEntity extends AbstractTEntity {
+public class WaitMutexEntity extends AbstractTJobEntity {
 
     private RedisDaoImpl redisService;
     public WaitMutexEntity(String cause, String key, RedisDaoImpl redisService) {
@@ -36,5 +36,6 @@ public class WaitMutexEntity extends AbstractTEntity {
 //        }
         return CommitResult.SUCCESS;
     }
+
 
 }

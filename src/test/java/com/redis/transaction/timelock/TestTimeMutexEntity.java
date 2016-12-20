@@ -1,7 +1,7 @@
 package com.redis.transaction.timelock;
 
 import com.redis.transaction.db.RedisDaoImpl;
-import com.redis.transaction.entity.AbstractTEntity;
+import com.redis.transaction.job.entity.AbstractTJobEntity;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.enums.TLockType;
 import com.redis.transaction.exception.TException;
@@ -10,7 +10,7 @@ import com.redis.util.TimeUtil;
 /**
  * Created by jiangwenping on 16/12/9.
  */
-public class TestTimeMutexEntity extends AbstractTEntity {
+public class TestTimeMutexEntity extends AbstractTJobEntity {
 
     private RedisDaoImpl redisService;
     public TestTimeMutexEntity(String cause, String key, RedisDaoImpl redisService) {

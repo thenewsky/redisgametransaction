@@ -1,4 +1,4 @@
-package com.redis.transaction.entity;
+package com.redis.transaction.job.entity;
 
 import com.redis.log.Loggers;
 import com.redis.transaction.db.RedisDaoImpl;
@@ -15,7 +15,7 @@ import java.util.BitSet;
  * Created by jiangwenping on 16/11/26.
  * 抽象事务实体
  */
-public abstract class AbstractTEntity implements TEntity {
+public abstract class AbstractTJobEntity implements TJobEntity {
 
     protected static Logger transactionLogger = Loggers.transactionLogger;
 
@@ -40,13 +40,14 @@ public abstract class AbstractTEntity implements TEntity {
     private boolean rejectFlag = false;
 
     //defult
-    public AbstractTEntity(String cause, String key, RedisDaoImpl redisService) {
+    public AbstractTJobEntity(String cause, String key, RedisDaoImpl redisService) {
         this(cause, key, redisService, TLockType.WRITE);
     }
 
-    public AbstractTEntity(String cause, String key, RedisDaoImpl redisService, TLockType gameTransactionLockType) {
+    public AbstractTJobEntity(String cause, String key, RedisDaoImpl redisService, TLockType gameTransactionLockType) {
         this.progressBitSet = new BitSet();
         this.tLock = new TLockImpl(key, redisService, cause);
+        transactionLogger.debug("<debug-add-entity>" + "AbstractTJobEntity" + "this.tLock = new TLockImpl(key, redisService, cause);");
         this.tLockType = gameTransactionLockType;
     }
 
@@ -58,7 +59,7 @@ public abstract class AbstractTEntity implements TEntity {
      * @param tLockType
      * @param lockTime     此参数只针对 非readlock锁
      */
-    public AbstractTEntity(String cause, String key, RedisDaoImpl redisService, TLockType tLockType, long lockTime) {
+    public AbstractTJobEntity(String cause, String key, RedisDaoImpl redisService, TLockType tLockType, long lockTime) {
         this.progressBitSet = new BitSet();
         this.tLockType = tLockType;
 
@@ -105,8 +106,8 @@ public abstract class AbstractTEntity implements TEntity {
     }
 
     @Override
-    public boolean lock(long seconds) throws TException {
-        boolean result = tLock.lock(seconds);
+    public boolean lock(long uuid) throws TException {
+        boolean result = tLock.lock(uuid);
         if (rejectFlag) {
             result = !result;
         }
@@ -148,5 +149,9 @@ public abstract class AbstractTEntity implements TEntity {
 
     public TLock getLock() {
         return this.tLock;
+    }
+
+    public String getInfo() {
+        return tLockType + "类型" + tLock.getInfo();
     }
 }

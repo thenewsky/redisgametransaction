@@ -55,7 +55,7 @@ public interface GameTransaction {
      *
      * @return
      */
-    public String getCause();
+    public String getName();
 
     /**
      *

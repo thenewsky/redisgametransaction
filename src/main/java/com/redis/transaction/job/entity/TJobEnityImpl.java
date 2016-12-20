@@ -1,4 +1,4 @@
-package com.redis.transaction.entity;
+package com.redis.transaction.job.entity;
 
 import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.enums.CommitResult;
@@ -9,9 +9,9 @@ import com.redis.transaction.exception.TException;
  * Created by jiangwenping on 16/12/7.
  * 读取实体
  */
-public class TEnityImpl extends AbstractTEntity {
+public class TJobEnityImpl extends AbstractTJobEntity {
 
-    public TEnityImpl(String cause, String key, RedisDaoImpl redisService) {
+    public TJobEnityImpl(String cause, String key, RedisDaoImpl redisService) {
         super(cause, key, redisService, TLockType.READ);
     }
 
@@ -30,6 +30,11 @@ public class TEnityImpl extends AbstractTEntity {
     public CommitResult trycommit()
             throws TException {
         return CommitResult.SUCCESS;
+    }
+
+    @Override
+    public String getInfo() {
+        return "TEnity-getInfo";
     }
 
 }

@@ -1,4 +1,4 @@
-package com.redis.transaction.service;
+package com.redis.transaction.db;
 
 import com.redis.util.FileUtil;
 import com.redis.config.GlobalConstants;
@@ -11,7 +11,7 @@ import redis.clients.jedis.JedisPoolConfig;
 /**
  * Created by jiangwenping on 16/11/29.
  */
-public class ConfigService {
+public class DBConfigManager {
     private static JedisPool jedisPool;
     static {
         try {
@@ -25,7 +25,7 @@ public class ConfigService {
         return jedisPool;
     }
 
-    private ConfigService() {
+    private DBConfigManager() {
     }
 
     private static JedisPoolConfig initRediPoolConfig(String jedisPoolConfigUrl) throws DataConversionException {

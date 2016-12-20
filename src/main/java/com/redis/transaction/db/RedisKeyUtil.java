@@ -30,12 +30,5 @@ public class RedisKeyUtil {
         return lockKey + "#" + tEntityName;
     }
 
-    /**
-     * 获取信息
-     *
-     * @return
-     */
-//    public String getInfo() {
-//        return lockKey + StringUtils.DEFAULT_SPLIT + tEntityName.toString() + StringUtils.DEFAULT_SPLIT + this.lockState;
-//    }
+
 }

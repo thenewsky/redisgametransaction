@@ -1,4 +1,4 @@
-package com.redis.transaction.entity;
+package com.redis.transaction.job.entity;
 
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.exception.TException;
@@ -8,7 +8,7 @@ import com.redis.transaction.db.RedisDaoImpl;
  * Created by jiangwenping on 16/12/6.
  * 设置一个数据到redis
  */
-public class TestMutexEntity extends AbstractTEntity {
+public class TestMutexEntity extends AbstractTJobEntity {
 
     private RedisDaoImpl redisService;
     public TestMutexEntity(String cause, String key, RedisDaoImpl redisService) {

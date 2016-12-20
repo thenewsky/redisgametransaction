@@ -1,0 +1,19 @@
+@startuml
+title: transjob
+TJobEntity_1 -> TJobEntity_2: locked-1
+TJobEntity_2 -> TJobEntity_3: locked-2
+TJobEntity_3 -> ...: locked-5
+... -> ...: locked-...
+
+TJobEntity_1 -> TJobEntity_2: commit-1 /error  rollback-1
+TJobEntity_2 -> TJobEntity_3: commit-2 /error  rollback-2,rollback-1
+TJobEntity_3 -> ...: commit-3 /error  rollback-3,rollback-2,rollback-1
+... -> ...: commit-...
+
+TJobEntity_1 -> TJobEntity_2: unlock-1
+TJobEntity_2 -> TJobEntity_3: unlock-2
+TJobEntity_3 -> ...: unlock-3
+... -> ...: unlock-...
+
+
+@enduml

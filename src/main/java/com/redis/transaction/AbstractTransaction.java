@@ -4,7 +4,7 @@ package com.redis.transaction;
  * Created by jiangwenping on 16/12/6.
  */
 
-import com.redis.transaction.entity.TEntity;
+import com.redis.transaction.job.entity.TJobEntity;
 import com.redis.transaction.enums.CommitResult;
 
 import java.util.ArrayList;
@@ -21,42 +21,41 @@ public abstract class AbstractTransaction implements GameTransaction {
      */
     protected int state;
     /**
-     * 事务实体
+     * 事务实体列表
      */
-    protected List<TEntity> entities;
+    protected List<TJobEntity> entities;
     /**
-     * 事务原因
+     * 事务名称
      */
-    private String cause;
+    private String name;
 
     /**
      * 游戏事务提交结果
      */
-    protected CommitResult gameTransactionTryCommitResult;
+    protected CommitResult commitResult;
 
-    public AbstractTransaction(String cause) {
-        this.cause = cause;
-        this.entities = new ArrayList<TEntity>();
-        gameTransactionTryCommitResult = CommitResult.SUCCESS;
+    public AbstractTransaction(String name) {
+        this.name = name;
+        this.entities = new ArrayList<TJobEntity>();
+        commitResult = CommitResult.SUCCESS;
         this.state = ACTIVE;
     }
 
-    public void addEntity(TEntity entity) {
+    public void addEntity(TJobEntity entity) {
         entities.add(entity);
     }
 
-    @Override
-    public String getCause() {
-        return cause;
+    public String getName() {
+        return name;
     }
 
     @Override
     public boolean canCommit() {
-        return gameTransactionTryCommitResult.equals(CommitResult.SUCCESS);
+        return commitResult == CommitResult.SUCCESS;
     }
 
-    public CommitResult getGameTransactionTryCommitResult() {
-        return gameTransactionTryCommitResult;
+    public CommitResult getCommitResult() {
+        return commitResult;
     }
 
 
