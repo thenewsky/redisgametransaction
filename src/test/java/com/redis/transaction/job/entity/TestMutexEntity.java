@@ -1,5 +1,6 @@
 package com.redis.transaction.job.entity;
 
+import com.redis.transaction.db.RedisDao;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.exception.TException;
 import com.redis.transaction.db.RedisDaoImpl;
@@ -10,16 +11,17 @@ import com.redis.transaction.db.RedisDaoImpl;
  */
 public class TestMutexEntity extends AbstractTJobEntity {
 
-    private RedisDaoImpl redisService;
-    public TestMutexEntity(String cause, String key, RedisDaoImpl redisService) {
-        super(cause, key, redisService);
-        this.redisService = redisService;
+    private RedisDao redisService;
+
+    public TestMutexEntity(RedisDao redisDao, String key, String cause) {
+        super(redisDao, key, cause);
+        this.redisService = redisDao;
 
     }
 
     @Override
     public void commit() throws TException {
-        String testRedisKey =  "testRedis";
+        String testRedisKey = "testRedis";
         redisService.setString(testRedisKey, "1000");
     }
 

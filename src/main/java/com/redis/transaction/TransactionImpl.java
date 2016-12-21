@@ -52,9 +52,9 @@ public class TransactionImpl extends AbstractTransaction {
             if (!entity.needCommit()) {
                 continue;
             }
-            CommitResult gameTransactionEntityTryCommitResult = entity.trycommit();
-            if (!gameTransactionEntityTryCommitResult.equals(CommitResult.SUCCESS)) {
-                this.commitResult = gameTransactionEntityTryCommitResult;
+            CommitResult commitResult = entity.trycommit();
+            if (!commitResult.equals(CommitResult.SUCCESS)) {
+                this.commitResult = commitResult;
                 break;
             }
         }
@@ -70,7 +70,7 @@ public class TransactionImpl extends AbstractTransaction {
         if (waitTime > 0) {
             for (; ; ) {
                 long uuid = TimeUtil.getSeconds();//lock 唯一id  粒度 自定义.目前为秒
-                creatflag = lockAllEntities(uuid);
+                creatflag = lockAllEntities(getName());
                 if (creatflag = true) {
                     break;
                 }
@@ -81,7 +81,7 @@ public class TransactionImpl extends AbstractTransaction {
 
                 }
 
-                uuid = TimeUtil.getSeconds();
+//                uuid = TimeUtil.getSeconds();
                 if (startSecond + waitTime < uuid) {
                     creatflag = false;
                     break;
@@ -89,16 +89,16 @@ public class TransactionImpl extends AbstractTransaction {
             }
         } else {
             long seconds = TimeUtil.getSeconds();
-            creatflag = lockAllEntities(startSecond);
+            creatflag = lockAllEntities(getName());
         }
         return creatflag;
     }
 
-    public boolean lockAllEntities(long uuid) throws TException {
+    public boolean lockAllEntities(String transction_name) throws TException {
         boolean creatFlag = false;
         for (TJobEntity entity : entities) {
             try {
-                creatFlag = entity.lock(uuid);
+                creatFlag = entity.lock(transction_name);
             } catch (Exception e) {
                 throw new TException(e.getMessage());
             }

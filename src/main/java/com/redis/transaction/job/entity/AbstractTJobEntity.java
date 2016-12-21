@@ -1,7 +1,7 @@
 package com.redis.transaction.job.entity;
 
 import com.redis.log.Loggers;
-import com.redis.transaction.db.DBDao;
+import com.redis.transaction.db.RedisDao;
 import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.enums.TLockType;
 import com.redis.transaction.exception.TException;
@@ -41,35 +41,34 @@ public abstract class AbstractTJobEntity implements TJobEntity {
     private boolean rejectFlag = false;
 
     //defult
-    public AbstractTJobEntity(String cause, String key, DBDao redisService) {
-        this(cause, key, redisService, TLockType.WRITE);
+    public AbstractTJobEntity(RedisDao redisDao, String key_pre, String entity_name) {
+        this(redisDao, key_pre, entity_name, TLockType.WRITE);
     }
 
-    public AbstractTJobEntity(String key,String name,  DBDao dbDao, TLockType tLockType) {
+    public AbstractTJobEntity(RedisDao redisDao, String key_pre, String entity_name, TLockType lockType) {
         this.progressBitSet = new BitSet();
-        this.tLock = new TLockImpl(key, dbDao, name);
-        transactionLogger.debug("<debug-add-entity>" + "AbstractTJobEntity" + "this.tLock = new TLockImpl(key, redisService, cause);");
-        this.tLockType = tLockType;
+        this.tLock = new TLockImpl(redisDao, key_pre, entity_name);
+        this.tLockType = lockType;
     }
 
 
     /**
-     * @param cause
-     * @param key
-     * @param redisService
+     * @param key_pre
+     * @param entity_name
+     * @param redisDao
      * @param tLockType
-     * @param lockTime     此参数只针对 非readlock锁
+     * @param lockTime    此参数只针对 非readlock锁
      */
-    public AbstractTJobEntity(String cause, String key, RedisDaoImpl redisService, TLockType tLockType, long lockTime) {
+    public AbstractTJobEntity(RedisDao redisDao, String key_pre, String entity_name, TLockType tLockType, long lockTime) {
         this.progressBitSet = new BitSet();
         this.tLockType = tLockType;
 
         if (tLockType.equals(TLockType.READ)) {
-            this.tLock = new TReadLockImpl(key, redisService, cause);
+            this.tLock = new TReadLockImpl(redisDao, key_pre, entity_name);
         } else if (tLockType.equals(TLockType.FORCE_WRITE_TIME)) {
-            this.tLock = new TLockImpl(key, redisService, cause, lockTime, true);
+            this.tLock = new TLockImpl(redisDao, key_pre, entity_name, lockTime, true);
         } else {
-            this.tLock = new TLockImpl(key, redisService, cause, lockTime, false);
+            this.tLock = new TLockImpl(redisDao, key_pre, entity_name, lockTime, false);
 
         }
 
@@ -107,8 +106,8 @@ public abstract class AbstractTJobEntity implements TJobEntity {
     }
 
     @Override
-    public boolean lock(long uuid) throws TException {
-        boolean result = tLock.lock(uuid);
+    public boolean lock(String transction_name) throws TException {
+        boolean result = tLock.lock(transction_name);
         if (rejectFlag) {
             result = !result;
         }

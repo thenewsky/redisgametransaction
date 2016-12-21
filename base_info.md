@@ -21,10 +21,3 @@
  
 ##### 参考资料:
 - [数据库事务-wikipadia](https://zh.wikipedia.org/wiki/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1)
-
-
-
-
-- T:Transaction缩写
-- GT:GameTransaction缩写
-- TJob :TransactionJob 

@@ -9,7 +9,7 @@ import redis.clients.jedis.JedisPool;
  * Created by jiangwenping on 16/11/26.
  * 提供redis读取服务
  */
-public class RedisDaoImpl implements DBDao {
+public class RedisDaoImpl implements RedisDao {
 
     protected static Logger logger = Loggers.redisLogger;
     /*

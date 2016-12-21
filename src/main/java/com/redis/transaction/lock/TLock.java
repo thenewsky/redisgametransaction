@@ -11,15 +11,19 @@ public interface TLock {
 
     /**
      * 依赖DB创建的锁
+     *
      * @return
      */
-    public boolean lock(long seconds)  throws TException;
+    public boolean lock(String transction_name) throws TException;
+
     public void unLock();
-//    /**
+
+    //    /**
 //     * 获取信息
 //     * @return
 //     */
     public String getInfo();
+
     /**
      * 设置内容
      */

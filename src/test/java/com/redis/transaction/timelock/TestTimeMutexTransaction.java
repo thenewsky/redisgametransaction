@@ -21,7 +21,7 @@ public class TestTimeMutexTransaction {
 
         TransactionJob transactionService = new TransactionJobImpl();
         String union = "union";
-        TestTimeMutexEntity testMutexEntity = TEntityFactoryImpl.createTestTimeMutexEntity(TEntityName.time, redisService, RedisKey.player, union);
+        TestTimeMutexEntity testMutexEntity = TEntityFactoryImpl.createTestTimeMutexEntity(redisService, TEntityName.time, RedisKey.player, union);
         CommitResult commitResult = transactionService.commit(TName.time, testMutexEntity);
         System.out.println(commitResult.getReuslt());
     }

@@ -31,7 +31,7 @@ public interface TJobEntity {
      *
      * @return
      */
-    public boolean lock(long seconds) throws TException;
+    public boolean lock(String transction_name) throws TException;
 
     /**
      * 释放锁

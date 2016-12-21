@@ -1,5 +1,6 @@
 package com.redis.transaction;
 
+import com.redis.transaction.db.RedisDao;
 import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.job.entity.TestMutexEntity;
 import com.redis.transaction.enums.TLockType;
@@ -13,27 +14,27 @@ import com.redis.transaction.wait.WaitMutexEntity;
  */
 public class TEntityFactoryImpl extends TJobEntityFactory {
 
-    public  static TestMutexEntity createTestMutexEntity(String name, RedisDaoImpl redisService, String redisKey, String union){
+    public static TestMutexEntity createTestMutexEntity(String name, RedisDao redisDao, String redisKey, String union) {
         String key = GameTransactionKeyFactoryImpl.getPlayerTransactionEntityKey(name, redisKey, union);
-        TestMutexEntity testMutexEntity = new TestMutexEntity(name, union, redisService);
+        TestMutexEntity testMutexEntity = new TestMutexEntity(redisDao, name, union);
         return testMutexEntity;
     }
 
-    public  static ForceEntity createForceEntity(String cause, RedisDaoImpl redisService, String redisKey, String union, int seconds){
+    public static ForceEntity createForceEntity(RedisDaoImpl redisDao, String cause, String redisKey, String union, int seconds) {
         String key = GameTransactionKeyFactoryImpl.getPlayerTransactionEntityKey(cause, redisKey, union);
-        ForceEntity forceEntity = new ForceEntity(cause, union, redisService, TLockType.FORCE_WRITE_TIME, seconds);
+        ForceEntity forceEntity = new ForceEntity(redisDao, cause, union, TLockType.FORCE_WRITE_TIME, seconds);
         return forceEntity;
     }
 
-    public  static TestTimeMutexEntity createTestTimeMutexEntity(String cause, RedisDaoImpl redisService, String redisKey, String union){
-        String key = GameTransactionKeyFactoryImpl.getPlayerTransactionEntityKey(cause, redisKey, union);
-        TestTimeMutexEntity testTimeMutexEntity = new TestTimeMutexEntity(cause, union, redisService);
+    public static TestTimeMutexEntity createTestTimeMutexEntity(RedisDaoImpl redisDao, String key_pre, String entity_name, String union) {
+        String key = GameTransactionKeyFactoryImpl.getPlayerTransactionEntityKey(key_pre, entity_name, union);
+        TestTimeMutexEntity testTimeMutexEntity = new TestTimeMutexEntity(redisDao, key, union);
         return testTimeMutexEntity;
     }
 
-    public  static WaitMutexEntity createWaitMutexEntity(String cause, RedisDaoImpl redisService, String redisKey, String union){
-        String key = GameTransactionKeyFactoryImpl.getPlayerTransactionEntityKey(cause, redisKey, union);
-        WaitMutexEntity waitTimeMutexEntity = new WaitMutexEntity(cause, union, redisService);
+    public static WaitMutexEntity createWaitMutexEntity(RedisDaoImpl redisDao, String cause, String redisKey, String union) {
+        String key = GameTransactionKeyFactoryImpl.getPlayerTransactionEntityKey(redisKey, cause, union);
+        WaitMutexEntity waitTimeMutexEntity = new WaitMutexEntity(redisDao, cause, union);
         return waitTimeMutexEntity;
     }
 }

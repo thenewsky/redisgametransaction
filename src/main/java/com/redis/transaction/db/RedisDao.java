@@ -11,20 +11,9 @@ import redis.clients.jedis.JedisPool;
  * blog:www.zhujin.me
  * email: zhujin.nova@gmail.com
  */
-public interface DBDao {
-
-
+public interface RedisDao {
     public void expire(String key, int seconds);
     public boolean deleteKey(String key);
-
-    /**
-     *
-     * @param lockName
-     * @param lockContent
-     * @param seconds
-     * @return
-     * @throws Exception
-     */
     public boolean setNxString(String lockName, String lockContent, int seconds) throws Exception;
     public boolean setHnxString(String key, String field, String value) throws Exception;
     public String getString(String key);

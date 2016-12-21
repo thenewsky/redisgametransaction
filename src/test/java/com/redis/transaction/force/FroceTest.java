@@ -23,7 +23,7 @@ public class FroceTest {
 
         String union = "union";
         String attchMent = "attchement";
-        ForceEntity forceEntity = TEntityFactoryImpl.createForceEntity(TEntityName.force, redisService, RedisKey.player, union, TimeUtil.SIX_HOUR_SECOND);
+        ForceEntity forceEntity = TEntityFactoryImpl.createForceEntity(redisService,TEntityName.force,  RedisKey.player, union, TimeUtil.SIX_HOUR_SECOND);
         forceEntity.getLock().setContent(attchMent);
         CommitResult commitResult = transactionService.commit(TName.force, forceEntity);
         System.out.println(commitResult.getReuslt());

@@ -13,15 +13,16 @@ import com.redis.util.TimeUtil;
 public class TestTimeMutexEntity extends AbstractTJobEntity {
 
     private RedisDaoImpl redisService;
-    public TestTimeMutexEntity(String cause, String key, RedisDaoImpl redisService) {
-        super(cause, key, redisService, TLockType.WRITE_TIME, TimeUtil.FIVE_MINUTE);
+
+    public TestTimeMutexEntity(RedisDaoImpl redisService, String key_pre, String entity_name) {
+        super(redisService, key_pre, entity_name, TLockType.WRITE_TIME, TimeUtil.FIVE_MINUTE);
         this.redisService = redisService;
 
     }
 
     @Override
     public void commit() throws TException {
-        String testRedisKey =  "testRedis";
+        String testRedisKey = "testRedis";
         redisService.setString(testRedisKey, "1000");
     }
 

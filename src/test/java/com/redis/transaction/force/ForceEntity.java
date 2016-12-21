@@ -1,5 +1,6 @@
 package com.redis.transaction.force;
 
+import com.redis.transaction.db.RedisDao;
 import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.job.entity.AbstractTJobEntity;
 import com.redis.transaction.enums.CommitResult;
@@ -11,8 +12,8 @@ import com.redis.transaction.exception.TException;
  */
 public class ForceEntity extends AbstractTJobEntity {
 
-    public ForceEntity(String cause, String key, RedisDaoImpl redisService, TLockType gameTransactionLockType, int seconds) {
-        super(cause, key, redisService, gameTransactionLockType, seconds);
+    public ForceEntity(RedisDao RedisDao, String key_pre, String entity_name, TLockType type, int seconds) {
+        super(RedisDao, key_pre, entity_name, type, seconds);
     }
 
     @Override

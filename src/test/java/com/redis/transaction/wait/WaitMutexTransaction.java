@@ -23,7 +23,7 @@ public class WaitMutexTransaction {
         TransactionJob transactionService = new TransactionJobImpl();
         String union = "union";
         long waitTime = TimeUtil.MINUTE_SECOND;
-        WaitMutexEntity waitMutexTransaction = TEntityFactoryImpl.createWaitMutexEntity(TEntityName.wait, redisService, RedisKey.player, union);
+        WaitMutexEntity waitMutexTransaction = TEntityFactoryImpl.createWaitMutexEntity(redisService,TEntityName.wait,  RedisKey.player, union);
         CommitResult commitResult = transactionService.commit(TName.wait, waitTime, waitMutexTransaction);
         System.out.println(commitResult.getReuslt());
     }

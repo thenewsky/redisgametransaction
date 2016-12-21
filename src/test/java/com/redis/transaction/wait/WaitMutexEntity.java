@@ -1,6 +1,6 @@
 package com.redis.transaction.wait;
 
-import com.redis.transaction.db.RedisDaoImpl;
+import com.redis.transaction.db.RedisDao;
 import com.redis.transaction.job.entity.AbstractTJobEntity;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.exception.TException;
@@ -10,17 +10,18 @@ import com.redis.transaction.exception.TException;
  */
 public class WaitMutexEntity extends AbstractTJobEntity {
 
-    private RedisDaoImpl redisService;
-    public WaitMutexEntity(String cause, String key, RedisDaoImpl redisService) {
-        super(cause, key, redisService);
-        this.redisService = redisService;
+    private RedisDao redisDao;
+
+    public WaitMutexEntity(RedisDao redisDao, String cause, String key) {
+        super(redisDao, cause, key);
+        this.redisDao = redisDao;
 
     }
 
     @Override
     public void commit() throws TException {
-        String testRedisKey =  "testRedis";
-        redisService.setString(testRedisKey, "1000");
+        String testRedisKey = "testRedis";
+        redisDao.setString(testRedisKey, "1000");
     }
 
     @Override
@@ -31,7 +32,7 @@ public class WaitMutexEntity extends AbstractTJobEntity {
     @Override
     public CommitResult trycommit() throws TException {
 //        String testRedisKey =  "testRedis";
-//        if(redisService.getString(testRedisKey).equals("1000")){
+//        if(redisDao.getString(testRedisKey).equals("1000")){
 //            return CommitResult.COMMON_ERROR;
 //        }
         return CommitResult.SUCCESS;

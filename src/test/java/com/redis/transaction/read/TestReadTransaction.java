@@ -19,23 +19,19 @@ public class TestReadTransaction {
 
         RedisDaoImpl redisService = new RedisDaoImpl();
         redisService.setJedisPool(DBConfigManager.getJedisPool());//绑定redis数据源
-
-
         TransactionJob job = new TransactionJobImpl();
 
+        String uid = "#playerId";
 
-        String union = "union";//
-
-        TJobEnityImpl edit_a = TEntityFactoryImpl.createReadTEnity(RedisKey.lock_pre_common, TEntityName.EDIT_A, union, redisService);
-
-        TJobEnityImpl edit_b = TEntityFactoryImpl.createReadTEnity(RedisKey.lock_pre_common, TEntityName.EDIT_B, union, redisService);
+        TJobEnityImpl edit_a = TEntityFactoryImpl.createReadTEnity(redisService, RedisKey.lock_pre_common, TEntityName.EDIT_A + uid);
+        TJobEnityImpl edit_b = TEntityFactoryImpl.createReadTEnity(redisService, RedisKey.lock_pre_common, TEntityName.EDIT_B + uid);
 
         CommitResult commitResult = job.commit(TName.read, edit_b, edit_a);
 
         System.out.println(commitResult.getReuslt());
 
-//        TJobEnityImpl commonRejectReadTransactionEnity = TEntityFactoryImpl.createReadRejectTEnity(TEntityName.EDIT_B, redisService, RedisKey.lock_pre_common, union);
-//        commitResult = transactionService.commit(TName.EDIT_B, commonRejectReadTransactionEnity);
-//        System.out.println(commitResult.getReuslt());
+        TJobEnityImpl commonRejectReadTransactionEnity = TEntityFactoryImpl.createReadRejectTEnity(redisService, RedisKey.lock_pre_common, TEntityName.EDIT_B + uid);
+        commitResult = job.commit(TName.test, commonRejectReadTransactionEnity);
+        System.out.println(commitResult.getReuslt());
     }
 }
