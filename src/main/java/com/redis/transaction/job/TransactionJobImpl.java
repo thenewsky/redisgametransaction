@@ -25,7 +25,7 @@ public class TransactionJobImpl implements TransactionJob {
         try {
             if (transaction.lockAll()) {
                 logger.info("获得" + transaction + "锁成功");
-                transaction.trycommit();
+                transaction.prepare();
                 if (transaction.canCommit()) {
                     logger.info("提交" + transaction + "事务");
                     transaction.commit();
@@ -72,7 +72,7 @@ public class TransactionJobImpl implements TransactionJob {
         try {
             if (gameTransaction.lockAll()) {
                 logger.info("获得" + gameTransaction + "锁成功");
-                gameTransaction.trycommit();
+                gameTransaction.prepare();
                 if (gameTransaction.canCommit()) {
                     logger.info("提交" + gameTransaction + "事务");
                     gameTransaction.commit();

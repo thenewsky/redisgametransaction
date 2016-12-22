@@ -24,8 +24,23 @@ public interface GameTransaction {
      */
     public static final int ROLLBACK = 3;
 
+
+
     /**
-     * 事务提交
+     * 两段式提交-准备阶段
+     */
+    public void prepare() throws TException;
+
+    /**
+     * 是否可以提交
+     *
+     * @return
+     */
+    public boolean canCommit();
+
+
+    /**
+     * 两段式提交-事务提交
      *
      * @throws TException
      */
@@ -37,18 +52,6 @@ public interface GameTransaction {
      * @throws TException
      */
     public void rollback() throws TException;
-
-    /**
-     * 是否可以提交
-     *
-     * @return
-     */
-    public boolean canCommit();
-
-    /**
-     * 尝试性提交
-     */
-    public void trycommit() throws TException;
 
     /**
      * 获取事务原因

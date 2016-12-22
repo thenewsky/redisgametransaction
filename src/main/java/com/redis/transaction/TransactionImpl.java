@@ -44,9 +44,9 @@ public class TransactionImpl extends AbstractTransaction {
 
 
     @Override
-    public void trycommit() throws TException {
+    public void prepare() throws TException {
         if (state != ACTIVE)
-            throw new TException("TransactionImpl is active, can't trycommit");
+            throw new TException("TransactionImpl is active, can't prepare");
         this.state = TRY_COMMITED;
         for (TJobEntity entity : entities) {
             if (!entity.needCommit()) {
