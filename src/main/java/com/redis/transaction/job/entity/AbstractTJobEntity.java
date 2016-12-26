@@ -1,6 +1,7 @@
 package com.redis.transaction.job.entity;
 
 import com.redis.log.Loggers;
+import com.redis.transaction.db.DBDao;
 import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.enums.TLockType;
 import com.redis.transaction.exception.TException;
@@ -40,15 +41,15 @@ public abstract class AbstractTJobEntity implements TJobEntity {
     private boolean rejectFlag = false;
 
     //defult
-    public AbstractTJobEntity(String cause, String key, RedisDaoImpl redisService) {
+    public AbstractTJobEntity(String cause, String key, DBDao redisService) {
         this(cause, key, redisService, TLockType.WRITE);
     }
 
-    public AbstractTJobEntity(String cause, String key, RedisDaoImpl redisService, TLockType gameTransactionLockType) {
+    public AbstractTJobEntity(String key,String name,  DBDao dbDao, TLockType tLockType) {
         this.progressBitSet = new BitSet();
-        this.tLock = new TLockImpl(key, redisService, cause);
+        this.tLock = new TLockImpl(key, dbDao, name);
         transactionLogger.debug("<debug-add-entity>" + "AbstractTJobEntity" + "this.tLock = new TLockImpl(key, redisService, cause);");
-        this.tLockType = gameTransactionLockType;
+        this.tLockType = tLockType;
     }
 
 

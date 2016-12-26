@@ -43,8 +43,8 @@ public class TLockImpl implements TLock {
     private String lockContent = "";
 
 
-    public TLockImpl(String lockKey, RedisDaoImpl redisService, String tEntityName) {
-        this(lockKey, redisService, tEntityName, TimeUtil.MINUTE_SECOND, false);
+    public TLockImpl(String lockKey, DBDao redisService, String name) {
+        this(lockKey, redisService, name, TimeUtil.MINUTE_SECOND, false);
     }
 
     public TLockImpl(String lockKey, RedisDaoImpl redisService, String tEntityName, long lockTime, boolean forceFlag, String lockContent) {
@@ -52,11 +52,11 @@ public class TLockImpl implements TLock {
         this.lockContent = lockContent;
     }
 
-    public TLockImpl(String lockKey, RedisDaoImpl redisService, String tEntityName, long lockTime, boolean forceFlag) {
+    public TLockImpl(String lockKey, DBDao redisService, String name, long lockTime, boolean forceFlag) {
         super();
         this.lockKey = lockKey;
         this.dbDao = redisService;
-        this.name = tEntityName;
+        this.name = name;
         this.lockState = TLockState.INIT;
         this.lockTime = lockTime;
         this.forceFlag = forceFlag;

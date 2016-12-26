@@ -9,13 +9,13 @@ import com.redis.util.StringUtils;
 public class RedisKeyUtil {
 
     /**
-     * @param cause
+     * @param name
      * @param redisKey
-     * @param union
+     * @param uuid
      * @return
      */
-    public static String getCommonTransactionEntityKey(String cause, String redisKey, String union) {
-        return redisKey + cause + GlobalConstants.Strings.commonSplitString + union;
+    public static String getCommonEntityKey(String redisKey, String name, String uuid) {
+        return redisKey + name + GlobalConstants.Strings.commonSplitString + uuid;
     }
 
 

@@ -27,3 +27,4 @@
 
 - T:Transaction缩写
 - GT:GameTransaction缩写
+- TJob :TransactionJob 

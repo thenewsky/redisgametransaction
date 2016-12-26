@@ -1,5 +1,6 @@
 package com.redis.transaction.job.entity;
 
+import com.redis.transaction.db.DBDao;
 import com.redis.transaction.db.RedisDaoImpl;
 import com.redis.transaction.enums.CommitResult;
 import com.redis.transaction.enums.TLockType;
@@ -11,8 +12,8 @@ import com.redis.transaction.exception.TException;
  */
 public class TJobEnityImpl extends AbstractTJobEntity {
 
-    public TJobEnityImpl(String cause, String key, RedisDaoImpl redisService) {
-        super(cause, key, redisService, TLockType.READ);
+    public TJobEnityImpl(String key,String name,  DBDao dbDao) {
+        super( key,name, dbDao, TLockType.READ);
     }
 
 
